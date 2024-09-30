@@ -1,5 +1,4 @@
-// index.js
-// where your node app starts
+// where node app starts
 
 // init project
 var express = require('express');
@@ -23,6 +22,36 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
+
+// Define a route that handles GET requests to /api/:date?
+app.get('/api/:date?', (req, res) => {
+  // Extract the date parameter from the request
+  const dateParam = req.params.date;
+  let date;
+
+  // If no date parameter is provided, use the current date
+  if (!dateParam) {
+    date = new Date();
+  // If the date parameter is a number (Unix timestamp), parse it as an integer and create a new Date object
+  } else if (!isNaN(dateParam)) {
+    date = new Date(parseInt(dateParam));
+  // Otherwise, try to create a new Date object using the provided date string
+  } else {
+    date = new Date(dateParam);
+  }
+
+  // If the date is invalid, return a JSON response with an error message
+  if (date.toString() === 'Invalid Date') {
+    return res.json({ error: 'Invalid Date' });
+  }
+
+  // Return a JSON response with the Unix timestamp and UTC string representation of the date
+  res.json({
+    unix: date.getTime(),
+    utc: date.toUTCString(),
+  });
+});
+
 
 
 
